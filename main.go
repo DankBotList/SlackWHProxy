@@ -96,6 +96,12 @@ func CreateHandler(recepients []string) func(*gin.Context) {
 				continue
 			}
 
+			for headerName, vals := range ctx.Request.Header {
+				for _, val := range vals {
+					req.Header.Set(headerName, val)
+				}
+			}
+
 			resp, err := client.Do(req)
 			if err != nil {
 				fmt.Println(err)
