@@ -3,11 +3,13 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Configuration struct {
@@ -15,6 +17,9 @@ type Configuration struct {
 }
 
 func main() {
+
+	listenPtr := flag.String("listen", "", "The port/address to listen on, overrides sock")
+	sockPtr := flag.String("sock", "SlackProxy.sock", "The socket file to listen on.")
 
 	if _, err := os.Stat("config.json"); os.IsNotExist(err) {
 		data, err := json.MarshalIndent(Configuration{ForwardTo:map[string][]string{"key": {"https://discordapp.com/meme", "https://discordapp.com/dank"}}}, "", "    ")
@@ -46,7 +51,24 @@ func main() {
 		engine.POST(k, CreateHandler(v))
 	}
 
-	engine.Run(":8080")
+	if *listenPtr != "" {
+		socketString := *sockPtr
+		go func() {
+			for {
+				time.Sleep(500 * time.Millisecond)
+				if _, err := os.Stat(socketString); err == nil {
+					if err := os.Chmod(socketString, 0770); err != nil {
+						panic(err)
+					}
+					fmt.Println("Chmodded the socket file!")
+					break
+				}
+			}
+		}()
+		engine.RunUnix(socketString)
+	} else {
+		engine.Run(*listenPtr)
+	}
 
 }
 
