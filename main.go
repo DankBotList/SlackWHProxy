@@ -52,7 +52,7 @@ func main() {
 		engine.POST(k, CreateHandler(v))
 	}
 
-	if *listenPtr != "" {
+	if *listenPtr == "" {
 		socketString := *sockPtr
 		go func() {
 			for {
