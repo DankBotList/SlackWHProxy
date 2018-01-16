@@ -124,10 +124,7 @@ func CreateHandler(recepients []string) func(*gin.Context) {
 			ctx.Error(err)
 			return
 		}
-
-		ctx.String(lastResponse.StatusCode, string(data))
-
-		//ctx.Data(lastResponse.StatusCode, contentType, data)
+		ctx.Data(lastResponse.StatusCode, contentType, data)
 
 	}
 }
