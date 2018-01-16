@@ -20,6 +20,7 @@ func main() {
 
 	listenPtr := flag.String("listen", "", "The port/address to listen on, overrides sock")
 	sockPtr := flag.String("sock", "SlackProxy.sock", "The socket file to listen on.")
+	flag.Parse()
 
 	if _, err := os.Stat("config.json"); os.IsNotExist(err) {
 		data, err := json.MarshalIndent(Configuration{ForwardTo:map[string][]string{"key": {"https://discordapp.com/meme", "https://discordapp.com/dank"}}}, "", "    ")
